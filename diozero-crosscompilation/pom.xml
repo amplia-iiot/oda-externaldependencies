@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>diozero.wrapper</artifactId>
-    <version>0.12-SNAPSHOT</version>
+    <version>0.11-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
@@ -33,7 +33,7 @@
                                 </goals>
                                 <phase>generate-sources</phase>
                                 <configuration>
-                                    <connectionUrl>scm:git:git@github.com:amplia-iiot/diozero.git</connectionUrl>
+                                    <connectionUrl>scm:git:https://github.com/amplia-iiot/diozero.git</connectionUrl>
                                     <scmVersion>master</scmVersion>
                                     <scmVersionType>branch</scmVersionType>
                                     <skipCheckoutIfExists>true</skipCheckoutIfExists>
