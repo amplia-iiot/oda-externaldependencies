@@ -1,5 +1,5 @@
 #!/bin/bash
-# Compile opendpn3 lib for x86_64 or ARM (Sierra FX30S)
+# Compile opendpn3 lib for x86_64, ARM of Sierra FX30S or ARM of OWA
 
 cd $(dirname $0)/../../..
 projectDirectory=$(pwd)
@@ -8,14 +8,14 @@ projectBuildDirectory=${projectDirectory}/target
 if [[ $# != 2 ]] || [[ $1 != "--arch" ]]
 then
     echo "Invalid params calling to $0"
-    echo "Usage: make.sh --arch [x86_64 | arm]"
+    echo "Usage: make.sh --arch [x86_64 | legato | owasys]"
     exit 1
 fi
 
-if [[ $2 != "arm" ]] && [[ $2 != "x86_64" ]]
+if [[ $2 != "owasys" ]] && [[ $2 != "legato" ]] && [[ $2 != "x86_64" ]]
 then
     echo "Invalid params calling to $0"
-    echo "Unknown architecture $2. Only x86_64 and arm are possible"
+    echo "Unknown architecture $2. Only x86_64, legato and owasys are possible"
     exit 2
 fi
 
@@ -27,7 +27,7 @@ mkdir -p target/build/${arch}
 cd target/build/${arch}
 
 # If is for ARM architecture get the compiler programs and options from the toolchain file
-if [[ ${arch} == "arm" ]]
+if [[ ${arch} == "legato" ]]
 then
     # Source Sierra FX30S toolchain file to cross-compile (Legato should be installed at USER home)
     toolchainfile=${HOME}/legato/packages/resources/legato.sdk.latest/configlegatoenv
@@ -39,6 +39,21 @@ then
     fi
 
     source "${toolchainfile}"
+elif [[ ${arch} == "owasys" ]]
+then
+    # Source Sierra FX30S toolchain file to cross-compile (Legato should be installed at USER home)
+    toolchainfile=/opt/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf/configowasysenv.cmake
+
+    if [[ -z $toolchainfile ]]
+    then
+        echo "Owasys toolchain directory at /opt. Owasys toolchain is needed to cross-compile native libs."
+        exit 3
+    fi
+
+    cmake ${projectBuildDirectory}/checkout -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${projectBuildDirectory}/checkout-${arch} -DDNP3_JAVA=ON -DCMAKE_TOOLCHAIN_FILE=$toolchainfile
+    make -j
+    make install
+    exit 0
 fi
 
 # Compile opendnp3 lib in target/opendnp3/${arch} with JAVA option

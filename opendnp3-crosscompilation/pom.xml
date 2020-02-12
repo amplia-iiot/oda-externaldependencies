@@ -27,11 +27,49 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-scm-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>build-native-arm</id>
+                                <id>clone-legato</id>
+                                <goals>
+                                    <goal>checkout</goal>
+                                </goals>
+                                <phase>generate-sources</phase>
+                                <configuration>
+                                    <connectionUrl>scm:git:https://github.com/dnp3/opendnp3.git</connectionUrl>
+                                    <scmVersion>${opendnp3.version}</scmVersion>
+                                    <scmVersionType>tag</scmVersionType>
+                                    <skipCheckoutIfExists>true</skipCheckoutIfExists>
+                                    <checkoutDirectory>${project.build.directory}/checkout-legato</checkoutDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>${exec-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>init-git-submodules-legato</id>
+                                <phase>generate-sources</phase>
+                                <configuration>
+                                    <executable>git</executable>
+                                    <arguments>
+                                        <argument>submodule</argument>
+                                        <argument>update</argument>
+                                        <argument>--init</argument>
+                                        <argument>--recursive</argument>
+                                    </arguments>
+                                    <workingDirectory>${project.build.directory}/checkout-legato</workingDirectory>
+                                </configuration>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>build-native-linux-legato</id>
                                 <phase>compile</phase>
                                 <goals>
                                     <goal>exec</goal>
@@ -39,7 +77,238 @@
                                 <configuration>
                                     <arguments>
                                         <argument>--arch</argument>
-                                        <argument>arm</argument>
+                                        <argument>legato</argument>
+                                    </arguments>
+                                    <executable>./make.sh</executable>
+                                    <workingDirectory>src/main/script</workingDirectory>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>build-java-legato</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>mvn</executable>
+                                    <workingDirectory>${project.build.directory}/checkout-legato/java</workingDirectory>
+                                    <arguments>
+                                        <argument>-Dopendnp3.version=${opendnp3.version}</argument>
+                                        <argument>clean</argument>
+                                        <argument>package</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-install-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>install-file-libopendnp3java-legato</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                                <configuration>
+                                    <file>target/build/legato/libopendnp3java.so</file>
+                                    <groupId>com.automatak.dnp3</groupId>
+                                    <artifactId>libopendnp3java</artifactId>
+                                    <version>${project.version}</version>
+                                    <packaging>so</packaging>
+                                    <classifier>legato</classifier>
+                                    <generatePom>false</generatePom>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>install-file-libasiodnp3-legato</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                                <configuration>
+                                    <file>target/build/legato/libasiodnp3.so</file>
+                                    <groupId>com.automatak.dnp3</groupId>
+                                    <artifactId>libasiodnp3</artifactId>
+                                    <version>${project.version}</version>
+                                    <packaging>so</packaging>
+                                    <classifier>legato</classifier>
+                                    <generatePom>false</generatePom>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>install-file-libasiopal-legato</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                                <configuration>
+                                    <file>target/build/legato/libasiopal.so</file>
+                                    <groupId>com.automatak.dnp3</groupId>
+                                    <artifactId>libasiopal</artifactId>
+                                    <version>${project.version}</version>
+                                    <packaging>so</packaging>
+                                    <classifier>legato</classifier>
+                                    <generatePom>false</generatePom>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>install-file-libopendnp3-legato</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                                <configuration>
+                                    <file>target/build/legato/libopendnp3.so</file>
+                                    <groupId>com.automatak.dnp3</groupId>
+                                    <artifactId>libopendnp3</artifactId>
+                                    <version>${project.version}</version>
+                                    <packaging>so</packaging>
+                                    <classifier>legato</classifier>
+                                    <generatePom>false</generatePom>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>install-file-libopenpal-legato</id>
+                                <phase>install</phase>
+                                <goals>
+                                    <goal>install-file</goal>
+                                </goals>
+                                <configuration>
+                                    <file>target/build/legato/libopenpal.so</file>
+                                    <groupId>com.automatak.dnp3</groupId>
+                                    <artifactId>libopenpal</artifactId>
+                                    <version>${project.version}</version>
+                                    <packaging>so</packaging>
+                                    <classifier>legato</classifier>
+                                    <generatePom>false</generatePom>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>deploy-file-libopendnp3java-legato</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>deploy-file</goal>
+                                </goals>
+                                <configuration>
+                                    <file>target/build/legato/libopendnp3java.so</file>
+                                    <repositoryId>${targetrepositoryId}</repositoryId>
+                                    <url>${targetrepositoryUrl}</url>
+                                    <groupId>com.automatak.dnp3</groupId>
+                                    <artifactId>libopendnp3java</artifactId>
+                                    <version>${project.version}</version>
+                                    <packaging>so</packaging>
+                                    <classifier>legato</classifier>
+                                    <generatePom>false</generatePom>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>deploy-file-libasiodnp3-legato</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>deploy-file</goal>
+                                </goals>
+                                <configuration>
+                                    <file>target/build/legato/libasiodnp3.so</file>
+                                    <repositoryId>${targetrepositoryId}</repositoryId>
+                                    <url>${targetrepositoryUrl}</url>
+                                    <groupId>com.automatak.dnp3</groupId>
+                                    <artifactId>libasiodnp3</artifactId>
+                                    <version>${project.version}</version>
+                                    <packaging>so</packaging>
+                                    <classifier>legato</classifier>
+                                    <generatePom>false</generatePom>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>deploy-file-libasiopal-legato</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>deploy-file</goal>
+                                </goals>
+                                <configuration>
+                                    <file>target/build/legato/libasiopal.so</file>
+                                    <repositoryId>${targetrepositoryId}</repositoryId>
+                                    <url>${targetrepositoryUrl}</url>
+                                    <groupId>com.automatak.dnp3</groupId>
+                                    <artifactId>libasiopal</artifactId>
+                                    <version>${project.version}</version>
+                                    <packaging>so</packaging>
+                                    <classifier>legato</classifier>
+                                    <generatePom>false</generatePom>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>deploy-file-libopendnp3-legato</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>deploy-file</goal>
+                                </goals>
+                                <configuration>
+                                    <file>target/build/legato/libopendnp3.so</file>
+                                    <repositoryId>${targetrepositoryId}</repositoryId>
+                                    <url>${targetrepositoryUrl}</url>
+                                    <groupId>com.automatak.dnp3</groupId>
+                                    <artifactId>libopendnp3</artifactId>
+                                    <version>${project.version}</version>
+                                    <packaging>so</packaging>
+                                    <classifier>legato</classifier>
+                                    <generatePom>false</generatePom>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>deploy-file-libopenpal-legato</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>deploy-file</goal>
+                                </goals>
+                                <configuration>
+                                    <file>target/build/legato/libopenpal.so</file>
+                                    <repositoryId>${targetrepositoryId}</repositoryId>
+                                    <url>${targetrepositoryUrl}</url>
+                                    <groupId>com.automatak.dnp3</groupId>
+                                    <artifactId>libopenpal</artifactId>
+                                    <version>${project.version}</version>
+                                    <packaging>so</packaging>
+                                    <classifier>legato</classifier>
+                                    <generatePom>false</generatePom>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>owasys</id>
+            <activation>
+                <file>
+                    <exists>${user.home}/legato</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>build-native-arm-owasys</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>
+                                        <argument>--arch</argument>
+                                        <argument>owasys</argument>
                                     </arguments>
                                     <executable>./make.sh</executable>
                                     <workingDirectory>src/main/script</workingDirectory>
@@ -52,82 +321,82 @@
                         <artifactId>maven-install-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>install-file-libopendnp3java-arm</id>
+                                <id>install-file-libopendnp3java-owasys</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/lib/libopendnp3java.so</file>
+                                    <file>target/build/owasys/libopendnp3java.so</file>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libopendnp3java</artifactId>
                                     <version>${project.version}</version>
                                     <packaging>so</packaging>
-                                    <classifier>arm</classifier>
+                                    <classifier>owasys</classifier>
                                     <generatePom>false</generatePom>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>install-file-libasiodnp3-arm</id>
+                                <id>install-file-libasiodnp3-owasys</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/lib/libasiodnp3.so</file>
+                                    <file>target/build/owasys/libasiodnp3.so</file>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libasiodnp3</artifactId>
                                     <version>${project.version}</version>
                                     <packaging>so</packaging>
-                                    <classifier>arm</classifier>
+                                    <classifier>owasys</classifier>
                                     <generatePom>false</generatePom>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>install-file-libasiopal-arm</id>
+                                <id>install-file-libasiopal-owasys</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/lib/libasiopal.so</file>
+                                    <file>target/build/owasys/libasiopal.so</file>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libasiopal</artifactId>
                                     <version>${project.version}</version>
                                     <packaging>so</packaging>
-                                    <classifier>arm</classifier>
+                                    <classifier>owasys</classifier>
                                     <generatePom>false</generatePom>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>install-file-libopendnp3-arm</id>
+                                <id>install-file-libopendnp3-owasys</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/lib/libopendnp3.so</file>
+                                    <file>target/build/owasys/libopendnp3.so</file>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libopendnp3</artifactId>
                                     <version>${project.version}</version>
                                     <packaging>so</packaging>
-                                    <classifier>arm</classifier>
+                                    <classifier>owasys</classifier>
                                     <generatePom>false</generatePom>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>install-file-libopenpal-arm</id>
+                                <id>install-file-libopenpal-owasys</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/lib/libopenpal.so</file>
+                                    <file>target/build/owasys/libopenpal.so</file>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libopenpal</artifactId>
                                     <version>${project.version}</version>
                                     <packaging>so</packaging>
-                                    <classifier>arm</classifier>
+                                    <classifier>owasys</classifier>
                                     <generatePom>false</generatePom>
                                 </configuration>
                             </execution>
@@ -138,92 +407,92 @@
                         <artifactId>maven-deploy-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>deploy-file-libopendnp3java-arm</id>
+                                <id>deploy-file-libopendnp3java-owasys</id>
                                 <phase>deploy</phase>
                                 <goals>
                                     <goal>deploy-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/lib/libopendnp3java.so</file>
+                                    <file>target/build/owasys/libopendnp3java.so</file>
                                     <repositoryId>${targetrepositoryId}</repositoryId>
                                     <url>${targetrepositoryUrl}</url>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libopendnp3java</artifactId>
                                     <version>${project.version}</version>
                                     <packaging>so</packaging>
-                                    <classifier>arm</classifier>
+                                    <classifier>owasys</classifier>
                                     <generatePom>false</generatePom>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>deploy-file-libasiodnp3-arm</id>
+                                <id>deploy-file-libasiodnp3-owasys</id>
                                 <phase>deploy</phase>
                                 <goals>
                                     <goal>deploy-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/lib/libasiodnp3.so</file>
+                                    <file>target/build/owasys/libasiodnp3.so</file>
                                     <repositoryId>${targetrepositoryId}</repositoryId>
                                     <url>${targetrepositoryUrl}</url>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libasiodnp3</artifactId>
                                     <version>${project.version}</version>
                                     <packaging>so</packaging>
-                                    <classifier>arm</classifier>
+                                    <classifier>owasys</classifier>
                                     <generatePom>false</generatePom>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>deploy-file-libasiopal-arm</id>
+                                <id>deploy-file-libasiopal-owasys</id>
                                 <phase>deploy</phase>
                                 <goals>
                                     <goal>deploy-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/lib/libasiopal.so</file>
+                                    <file>target/build/owasys/libasiopal.so</file>
                                     <repositoryId>${targetrepositoryId}</repositoryId>
                                     <url>${targetrepositoryUrl}</url>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libasiopal</artifactId>
                                     <version>${project.version}</version>
                                     <packaging>so</packaging>
-                                    <classifier>arm</classifier>
+                                    <classifier>owasys</classifier>
                                     <generatePom>false</generatePom>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>deploy-file-libopendnp3-arm</id>
+                                <id>deploy-file-libopendnp3-owasys</id>
                                 <phase>deploy</phase>
                                 <goals>
                                     <goal>deploy-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/lib/libopendnp3.so</file>
+                                    <file>target/build/owasys/libopendnp3.so</file>
                                     <repositoryId>${targetrepositoryId}</repositoryId>
                                     <url>${targetrepositoryUrl}</url>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libopendnp3</artifactId>
                                     <version>${project.version}</version>
                                     <packaging>so</packaging>
-                                    <classifier>arm</classifier>
+                                    <classifier>owasys</classifier>
                                     <generatePom>false</generatePom>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>deploy-file-libopenpal-arm</id>
+                                <id>deploy-file-libopenpal-owasys</id>
                                 <phase>deploy</phase>
                                 <goals>
                                     <goal>deploy-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/lib/libopenpal.so</file>
+                                    <file>target/build/owasys/libopenpal.so</file>
                                     <repositoryId>${targetrepositoryId}</repositoryId>
                                     <url>${targetrepositoryUrl}</url>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libopenpal</artifactId>
                                     <version>${project.version}</version>
                                     <packaging>so</packaging>
-                                    <classifier>arm</classifier>
+                                    <classifier>owasys</classifier>
                                     <generatePom>false</generatePom>
                                 </configuration>
                             </execution>
