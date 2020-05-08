@@ -27,47 +27,9 @@
             <build>
                 <plugins>
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-scm-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>clone-legato</id>
-                                <goals>
-                                    <goal>checkout</goal>
-                                </goals>
-                                <phase>generate-sources</phase>
-                                <configuration>
-                                    <connectionUrl>scm:git:https://github.com/dnp3/opendnp3.git</connectionUrl>
-                                    <scmVersion>${opendnp3.version}</scmVersion>
-                                    <scmVersionType>tag</scmVersionType>
-                                    <skipCheckoutIfExists>true</skipCheckoutIfExists>
-                                    <checkoutDirectory>${project.build.directory}/checkout-legato</checkoutDirectory>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
-                        <version>${exec-maven-plugin.version}</version>
                         <executions>
-                            <execution>
-                                <id>init-git-submodules-legato</id>
-                                <phase>generate-sources</phase>
-                                <configuration>
-                                    <executable>git</executable>
-                                    <arguments>
-                                        <argument>submodule</argument>
-                                        <argument>update</argument>
-                                        <argument>--init</argument>
-                                        <argument>--recursive</argument>
-                                    </arguments>
-                                    <workingDirectory>${project.build.directory}/checkout-legato</workingDirectory>
-                                </configuration>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                            </execution>
                             <execution>
                                 <id>build-native-linux-legato</id>
                                 <phase>compile</phase>
@@ -81,22 +43,6 @@
                                     </arguments>
                                     <executable>./make.sh</executable>
                                     <workingDirectory>src/main/script</workingDirectory>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>build-java-legato</id>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>mvn</executable>
-                                    <workingDirectory>${project.build.directory}/checkout-legato/java</workingDirectory>
-                                    <arguments>
-                                        <argument>-Dopendnp3.version=${opendnp3.version}</argument>
-                                        <argument>clean</argument>
-                                        <argument>package</argument>
-                                    </arguments>
                                 </configuration>
                             </execution>
                         </executions>

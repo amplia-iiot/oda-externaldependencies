@@ -30,7 +30,8 @@ cd target/build/${arch}
 if [[ ${arch} == "legato" ]]
 then
     # Source Sierra FX30S toolchain file to cross-compile (Legato should be installed at USER home)
-    toolchainfile=${HOME}/legato/packages/resources/legato.sdk.latest/configlegatoenv
+    toolchainfile=${HOME}/legato/packages/legato.sdk.latest/resources/configlegatoenv
+    environmentfile=${HOME}/legato/packages/legato.sdk.latest/resources/toolchain/native/environment-setup-armv7a-vfp-neon-poky-linux-gnueabi
 
     if [[ -z $toolchainfile ]]
     then
@@ -39,6 +40,7 @@ then
     fi
 
     source "${toolchainfile}"
+    source "${environmentfile}"
 elif [[ ${arch} == "owasys" ]]
 then
     # Source Sierra FX30S toolchain file to cross-compile (Legato should be installed at USER home)
