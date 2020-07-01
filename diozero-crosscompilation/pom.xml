@@ -113,14 +113,40 @@
             </build>
         </profile>
         <profile>
-            <id>owa</id>
+            <id>owasys</id>
             <activation>
-                <file>
-                    <exists>/opt/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf</exists>
-                </file>
+                <property>
+                    <name>!skipOwasys</name>
+                </property>
             </activation>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack-owasys-compiler</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>es.amplia.oda</groupId>
+                                            <artifactId>owa-compiler</artifactId>
+                                            <version>5.3.1</version>
+                                            <type>zip</type>
+                                            <classifier>x86_64_armhf</classifier>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>/opt</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-scm-plugin</artifactId>

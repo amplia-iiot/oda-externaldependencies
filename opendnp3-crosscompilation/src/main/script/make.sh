@@ -48,7 +48,7 @@ then
 
     if [[ -z $toolchainfile ]]
     then
-        echo "Owasys toolchain directory at /opt. Owasys toolchain is needed to cross-compile native libs."
+        echo "Owasys toolchain not found. Ensure that the deploy downloaded it."
         exit 3
     fi
 
