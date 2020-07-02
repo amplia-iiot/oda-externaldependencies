@@ -9,7 +9,7 @@
     <parent>
         <groupId>es.amplia.oda</groupId>
         <artifactId>oda-externaldependencies</artifactId>
-        <version>3.25.4-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -58,7 +58,7 @@
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/legato/libopendnp3java.so</file>
+                                    <file>${project.build.directory}/checkout-legato/lib/libopendnp3java.so</file>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libopendnp3java</artifactId>
                                     <version>${project.version}</version>
@@ -74,7 +74,7 @@
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/legato/libasiodnp3.so</file>
+                                    <file>${project.build.directory}/checkout-legato/lib/libasiodnp3.so</file>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libasiodnp3</artifactId>
                                     <version>${project.version}</version>
@@ -90,7 +90,7 @@
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/legato/libasiopal.so</file>
+                                    <file>${project.build.directory}/checkout-legato/lib/libasiopal.so</file>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libasiopal</artifactId>
                                     <version>${project.version}</version>
@@ -106,7 +106,7 @@
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/legato/libopendnp3.so</file>
+                                    <file>${project.build.directory}/checkout-legato/lib/libopendnp3.so</file>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libopendnp3</artifactId>
                                     <version>${project.version}</version>
@@ -122,7 +122,7 @@
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/legato/libopenpal.so</file>
+                                    <file>${project.build.directory}/checkout-legato/lib/libopenpal.so</file>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libopenpal</artifactId>
                                     <version>${project.version}</version>
@@ -144,7 +144,7 @@
                                     <goal>deploy-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/legato/libopendnp3java.so</file>
+                                    <file>${project.build.directory}/checkout-legato/lib/libopendnp3java.so</file>
                                     <repositoryId>${targetrepositoryId}</repositoryId>
                                     <url>${targetrepositoryUrl}</url>
                                     <groupId>com.automatak.dnp3</groupId>
@@ -162,7 +162,7 @@
                                     <goal>deploy-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/legato/libasiodnp3.so</file>
+                                    <file>${project.build.directory}/checkout-legato/lib/libasiodnp3.so</file>
                                     <repositoryId>${targetrepositoryId}</repositoryId>
                                     <url>${targetrepositoryUrl}</url>
                                     <groupId>com.automatak.dnp3</groupId>
@@ -180,7 +180,7 @@
                                     <goal>deploy-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/legato/libasiopal.so</file>
+                                    <file>${project.build.directory}/checkout-legato/lib/libasiopal.so</file>
                                     <repositoryId>${targetrepositoryId}</repositoryId>
                                     <url>${targetrepositoryUrl}</url>
                                     <groupId>com.automatak.dnp3</groupId>
@@ -198,7 +198,7 @@
                                     <goal>deploy-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/legato/libopendnp3.so</file>
+                                    <file>${project.build.directory}/checkout-legato/lib/libopendnp3.so</file>
                                     <repositoryId>${targetrepositoryId}</repositoryId>
                                     <url>${targetrepositoryUrl}</url>
                                     <groupId>com.automatak.dnp3</groupId>
@@ -216,7 +216,7 @@
                                     <goal>deploy-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/legato/libopenpal.so</file>
+                                    <file>${project.build.directory}/checkout-legato/lib/libopenpal.so</file>
                                     <repositoryId>${targetrepositoryId}</repositoryId>
                                     <url>${targetrepositoryUrl}</url>
                                     <groupId>com.automatak.dnp3</groupId>
@@ -233,7 +233,7 @@
             </build>
         </profile>
         <profile>
-            <id>owasys</id>
+            <id>unpack-owa-compiler</id>
             <activation>
                 <property>
                     <name>!skipOwasys</name>
@@ -247,7 +247,7 @@
                         <executions>
                             <execution>
                                 <id>unpack-owasys-compiler</id>
-                                <phase>compile</phase>
+                                <phase>generate-sources</phase>
                                 <goals>
                                     <goal>unpack</goal>
                                 </goals>
@@ -260,13 +260,25 @@
                                             <type>zip</type>
                                             <classifier>x86_64_armhf</classifier>
                                             <overWrite>false</overWrite>
-                                            <outputDirectory>/opt</outputDirectory>
+                                            <outputDirectory>${user.home}/owa-compiler</outputDirectory>
                                         </artifactItem>
                                     </artifactItems>
                                 </configuration>
                             </execution>
                         </executions>
                     </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>owasys</id>
+            <activation>
+                <property>
+                    <name>!skipOwasys</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>exec-maven-plugin</artifactId>
@@ -299,7 +311,7 @@
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/owasys/libopendnp3java.so</file>
+                                    <file>${project.build.directory}/checkout-owasys/lib/libopendnp3java.so</file>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libopendnp3java</artifactId>
                                     <version>${project.version}</version>
@@ -315,7 +327,7 @@
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/owasys/libasiodnp3.so</file>
+                                    <file>${project.build.directory}/checkout-owasys/lib/libasiodnp3.so</file>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libasiodnp3</artifactId>
                                     <version>${project.version}</version>
@@ -331,7 +343,7 @@
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/owasys/libasiopal.so</file>
+                                    <file>${project.build.directory}/checkout-owasys/lib/libasiopal.so</file>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libasiopal</artifactId>
                                     <version>${project.version}</version>
@@ -347,7 +359,7 @@
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/owasys/libopendnp3.so</file>
+                                    <file>${project.build.directory}/checkout-owasys/lib/libopendnp3.so</file>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libopendnp3</artifactId>
                                     <version>${project.version}</version>
@@ -363,7 +375,7 @@
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/owasys/libopenpal.so</file>
+                                    <file>${project.build.directory}/checkout-owasys/lib/libopenpal.so</file>
                                     <groupId>com.automatak.dnp3</groupId>
                                     <artifactId>libopenpal</artifactId>
                                     <version>${project.version}</version>
@@ -385,7 +397,7 @@
                                     <goal>deploy-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/owasys/libopendnp3java.so</file>
+                                    <file>${project.build.directory}/checkout-owasys/lib/libopendnp3java.so</file>
                                     <repositoryId>${targetrepositoryId}</repositoryId>
                                     <url>${targetrepositoryUrl}</url>
                                     <groupId>com.automatak.dnp3</groupId>
@@ -403,7 +415,7 @@
                                     <goal>deploy-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/owasys/libasiodnp3.so</file>
+                                    <file>${project.build.directory}/checkout-owasys/lib/libasiodnp3.so</file>
                                     <repositoryId>${targetrepositoryId}</repositoryId>
                                     <url>${targetrepositoryUrl}</url>
                                     <groupId>com.automatak.dnp3</groupId>
@@ -421,7 +433,7 @@
                                     <goal>deploy-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/owasys/libasiopal.so</file>
+                                    <file>${project.build.directory}/checkout-owasys/lib/libasiopal.so</file>
                                     <repositoryId>${targetrepositoryId}</repositoryId>
                                     <url>${targetrepositoryUrl}</url>
                                     <groupId>com.automatak.dnp3</groupId>
@@ -439,7 +451,7 @@
                                     <goal>deploy-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/owasys/libopendnp3.so</file>
+                                    <file>${project.build.directory}/checkout-owasys/lib/libopendnp3.so</file>
                                     <repositoryId>${targetrepositoryId}</repositoryId>
                                     <url>${targetrepositoryUrl}</url>
                                     <groupId>com.automatak.dnp3</groupId>
@@ -457,7 +469,7 @@
                                     <goal>deploy-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>target/build/owasys/libopenpal.so</file>
+                                    <file>${project.build.directory}/checkout-owasys/lib/libopenpal.so</file>
                                     <repositoryId>${targetrepositoryId}</repositoryId>
                                     <url>${targetrepositoryUrl}</url>
                                     <groupId>com.automatak.dnp3</groupId>
@@ -587,7 +599,7 @@
                             <goal>install-file</goal>
                         </goals>
                         <configuration>
-                            <file>target/lib/libopendnp3java.so</file>
+                            <file>${project.build.directory}/checkout-x86_64/lib/libopendnp3java.so</file>
                             <groupId>com.automatak.dnp3</groupId>
                             <artifactId>libopendnp3java</artifactId>
                             <version>${project.version}</version>
@@ -602,7 +614,7 @@
                             <goal>install-file</goal>
                         </goals>
                         <configuration>
-                            <file>target/lib/libasiodnp3.so</file>
+                            <file>${project.build.directory}/checkout-x86_64/lib/libasiodnp3.so</file>
                             <groupId>com.automatak.dnp3</groupId>
                             <artifactId>libasiodnp3</artifactId>
                             <version>${project.version}</version>
@@ -617,7 +629,7 @@
                             <goal>install-file</goal>
                         </goals>
                         <configuration>
-                            <file>target/lib/libasiopal.so</file>
+                            <file>${project.build.directory}/checkout-x86_64/lib/libasiopal.so</file>
                             <groupId>com.automatak.dnp3</groupId>
                             <artifactId>libasiopal</artifactId>
                             <version>${project.version}</version>
@@ -632,7 +644,7 @@
                             <goal>install-file</goal>
                         </goals>
                         <configuration>
-                            <file>target/lib/libopendnp3.so</file>
+                            <file>${project.build.directory}/checkout-x86_64/lib/libopendnp3.so</file>
                             <groupId>com.automatak.dnp3</groupId>
                             <artifactId>libopendnp3</artifactId>
                             <version>${project.version}</version>
@@ -647,7 +659,7 @@
                             <goal>install-file</goal>
                         </goals>
                         <configuration>
-                            <file>target/lib/libopenpal.so</file>
+                            <file>${project.build.directory}/checkout-x86_64/lib/libopenpal.so</file>
                             <groupId>com.automatak.dnp3</groupId>
                             <artifactId>libopenpal</artifactId>
                             <version>${project.version}</version>
@@ -682,7 +694,7 @@
                             <goal>deploy-file</goal>
                         </goals>
                         <configuration>
-                            <file>target/lib/libopendnp3java.so</file>
+                            <file>${project.build.directory}/checkout-x86_64/lib/libopendnp3java.so</file>
                             <repositoryId>${targetrepositoryId}</repositoryId>
                             <url>${targetrepositoryUrl}</url>
                             <groupId>com.automatak.dnp3</groupId>
@@ -699,7 +711,7 @@
                             <goal>deploy-file</goal>
                         </goals>
                         <configuration>
-                            <file>target/lib/libasiodnp3.so</file>
+                            <file>${project.build.directory}/checkout-x86_64/lib/libasiodnp3.so</file>
                             <repositoryId>${targetrepositoryId}</repositoryId>
                             <url>${targetrepositoryUrl}</url>
                             <groupId>com.automatak.dnp3</groupId>
@@ -716,7 +728,7 @@
                             <goal>deploy-file</goal>
                         </goals>
                         <configuration>
-                            <file>target/lib/libasiopal.so</file>
+                            <file>${project.build.directory}/checkout-x86_64/lib/libasiopal.so</file>
                             <repositoryId>${targetrepositoryId}</repositoryId>
                             <url>${targetrepositoryUrl}</url>
                             <groupId>com.automatak.dnp3</groupId>
@@ -733,7 +745,7 @@
                             <goal>deploy-file</goal>
                         </goals>
                         <configuration>
-                            <file>target/lib/libopendnp3.so</file>
+                            <file>${project.build.directory}/checkout-x86_64/lib/libopendnp3.so</file>
                             <repositoryId>${targetrepositoryId}</repositoryId>
                             <url>${targetrepositoryUrl}</url>
                             <groupId>com.automatak.dnp3</groupId>
@@ -750,7 +762,7 @@
                             <goal>deploy-file</goal>
                         </goals>
                         <configuration>
-                            <file>target/lib/libopenpal.so</file>
+                            <file>${project.build.directory}/checkout-x86_64/lib/libopenpal.so</file>
                             <repositoryId>${targetrepositoryId}</repositoryId>
                             <url>${targetrepositoryUrl}</url>
                             <groupId>com.automatak.dnp3</groupId>

@@ -23,8 +23,8 @@ arch="$2"
 echo "Compiling Open DNP 3.0 library for ${arch} architecture"
 
 # Create build folder for build (inside target folder to be cleaned by Maven)
-mkdir -p target/build/${arch}
-cd target/build/${arch}
+mkdir -p ${projectBuildDirectory}/checkout-${arch}
+cd ${projectBuildDirectory}/checkout-${arch}
 
 # If is for ARM architecture get the compiler programs and options from the toolchain file
 if [[ ${arch} == "legato" ]]
@@ -44,7 +44,7 @@ then
 elif [[ ${arch} == "owasys" ]]
 then
     # Source Sierra FX30S toolchain file to cross-compile (Legato should be installed at USER home)
-    toolchainfile=/opt/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf/configowasysenv.cmake
+    toolchainfile=${HOME}/owa-compiler/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf/configowasysenv.cmake
 
     if [[ -z $toolchainfile ]]
     then
@@ -59,6 +59,6 @@ then
 fi
 
 # Compile opendnp3 lib in target/opendnp3/${arch} with JAVA option
-cmake ${projectBuildDirectory}/checkout -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${projectBuildDirectory} -DDNP3_JAVA=ON
+cmake ${projectBuildDirectory}/checkout -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${projectBuildDirectory}/checkout-${arch} -DDNP3_JAVA=ON
 make
 make install

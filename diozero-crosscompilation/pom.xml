@@ -9,7 +9,7 @@
     <parent>
         <groupId>es.amplia.oda</groupId>
         <artifactId>oda-externaldependencies</artifactId>
-        <version>3.25.4-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <profiles>
@@ -27,7 +27,7 @@
                         <artifactId>maven-scm-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>clone-arm</id>
+                                <id>clone-legato</id>
                                 <goals>
                                     <goal>checkout</goal>
                                 </goals>
@@ -37,7 +37,7 @@
                                     <scmVersion>master</scmVersion>
                                     <scmVersionType>branch</scmVersionType>
                                     <skipCheckoutIfExists>true</skipCheckoutIfExists>
-                                    <checkoutDirectory>${project.build.directory}/checkout-arm</checkoutDirectory>
+                                    <checkoutDirectory>${project.build.directory}/checkout-legato</checkoutDirectory>
                                 </configuration>
                             </execution>
                         </executions>
@@ -47,7 +47,7 @@
                         <artifactId>exec-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>compile-arm</id>
+                                <id>compile-legato</id>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
@@ -58,7 +58,7 @@
                                         <CROSS_FLAGS>-DFX30</CROSS_FLAGS>
                                     </environmentVariables>
                                     <executable>make</executable>
-                                    <workingDirectory>${project.build.directory}/checkout-arm/system-utils-native/src/main/c</workingDirectory>
+                                    <workingDirectory>${project.build.directory}/checkout-legato/system-utils-native/src/main/c</workingDirectory>
                                 </configuration>
                             </execution>
                         </executions>
@@ -68,18 +68,18 @@
                         <artifactId>maven-install-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>install-file-libdiozero-system-utils-arm</id>
+                                <id>install-file-libdiozero-system-utils-legato</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>${project.build.directory}/checkout-arm/system-utils-native/src/main/c/libdiozero-system-utils.so</file>
+                                    <file>${project.build.directory}/checkout-legato/system-utils-native/src/main/c/libdiozero-system-utils.so</file>
                                     <groupId>com.diozero</groupId>
                                     <artifactId>libdiozero-system-utils</artifactId>
                                     <version>${project.version}</version>
                                     <packaging>so</packaging>
-                                    <classifier>arm</classifier>
+                                    <classifier>legato</classifier>
                                     <generatePom>false</generatePom>
                                 </configuration>
                             </execution>
@@ -90,21 +90,59 @@
                         <artifactId>maven-deploy-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>deploy-file-libdiozero-system-utils-arm</id>
+                                <id>deploy-file-libdiozero-system-utils-legato</id>
                                 <phase>deploy</phase>
                                 <goals>
                                     <goal>deploy-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>${project.build.directory}/checkout-arm/system-utils-native/src/main/c/libdiozero-system-utils.so</file>
+                                    <file>${project.build.directory}/checkout-legato/system-utils-native/src/main/c/libdiozero-system-utils.so</file>
                                     <repositoryId>${targetrepositoryId}</repositoryId>
                                     <url>${targetrepositoryUrl}</url>
                                     <groupId>com.diozero</groupId>
                                     <artifactId>libdiozero-system-utils</artifactId>
                                     <version>${project.version}</version>
                                     <packaging>so</packaging>
-                                    <classifier>arm</classifier>
+                                    <classifier>legato</classifier>
                                     <generatePom>false</generatePom>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>unpack-owa-compiler</id>
+            <activation>
+                <file>
+                    <missing>${user.home}/owa-compiler</missing>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack-owasys-compiler</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>es.amplia.oda</groupId>
+                                            <artifactId>owa-compiler</artifactId>
+                                            <version>5.3.1</version>
+                                            <type>zip</type>
+                                            <classifier>x86_64_armhf</classifier>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${user.home}/owa-compiler</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
                                 </configuration>
                             </execution>
                         </executions>
@@ -121,32 +159,6 @@
             </activation>
             <build>
                 <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>unpack-owasys-compiler</id>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>unpack</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>es.amplia.oda</groupId>
-                                            <artifactId>owa-compiler</artifactId>
-                                            <version>5.3.1</version>
-                                            <type>zip</type>
-                                            <classifier>x86_64_armhf</classifier>
-                                            <overWrite>false</overWrite>
-                                            <outputDirectory>/opt</outputDirectory>
-                                        </artifactItem>
-                                    </artifactItems>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-scm-plugin</artifactId>
@@ -179,7 +191,7 @@
                                 <phase>compile</phase>
                                 <configuration>
                                     <environmentVariables>
-                                        <CROSS_TOOL>/opt/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-</CROSS_TOOL>
+                                        <CROSS_TOOL>${user.home}/owa-compiler/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-</CROSS_TOOL>
                                     </environmentVariables>
                                     <executable>make</executable>
                                     <workingDirectory>${project.build.directory}/checkout-owa/system-utils-native/src/main/c</workingDirectory>
@@ -296,7 +308,6 @@
                         <configuration>
                             <environmentVariables>
                                 <CROSS_TOOL>/usr/bin/</CROSS_TOOL>
-                                <CROSS_FLAGS />
                             </environmentVariables>
                             <executable>make</executable>
                             <workingDirectory>${project.build.directory}/checkout/system-utils-native/src/main/c</workingDirectory>

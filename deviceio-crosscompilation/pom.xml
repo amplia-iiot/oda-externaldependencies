@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>deviceio.wrapper</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <version>1.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <parent>
         <groupId>es.amplia.oda</groupId>
         <artifactId>oda-externaldependencies</artifactId>
-        <version>3.25.4-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -19,46 +19,20 @@
 
     <profiles>
         <profile>
-            <id>owasys</id>
+            <id>fx30</id>
             <activation>
-                <property>
-                    <name>!skipOwasys</name>
-                </property>
+                <file>
+                    <exists>${user.home}/legato</exists>
+                </file>
             </activation>
             <build>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-dependency-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>unpack-owasys-compiler</id>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>unpack</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactItems>
-                                        <artifactItem>
-                                            <groupId>es.amplia.oda</groupId>
-                                            <artifactId>owa-compiler</artifactId>
-                                            <version>5.3.1</version>
-                                            <type>zip</type>
-                                            <classifier>x86_64_armhf</classifier>
-                                            <overWrite>false</overWrite>
-                                            <outputDirectory>/opt</outputDirectory>
-                                        </artifactItem>
-                                    </artifactItems>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-scm-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>clone-arm</id>
+                                <id>clone-legato</id>
                                 <goals>
                                     <goal>checkout</goal>
                                 </goals>
@@ -68,7 +42,7 @@
                                     <scmVersion>${scm.revision.dio}</scmVersion>
                                     <scmVersionType>revision</scmVersionType>
                                     <skipCheckoutIfExists>true</skipCheckoutIfExists>
-                                    <checkoutDirectory>${project.build.directory}/checkout-arm</checkoutDirectory>
+                                    <checkoutDirectory>${project.build.directory}/checkout-legato</checkoutDirectory>
                                 </configuration>
                             </execution>
                         </executions>
@@ -86,9 +60,10 @@
                                 <configuration>
                                     <environmentVariables>
                                         <CROSS_TOOL>/opt/swi/y17-ext/sysroots/x86_64-pokysdk-linux/usr/bin/arm-poky-linux-gnueabi/arm-poky-linux-gnueabi-</CROSS_TOOL>
+                                        <CROSS_FLAGS>-DFX30</CROSS_FLAGS>
                                     </environmentVariables>
                                     <executable>make</executable>
-                                    <workingDirectory>${project.build.directory}/checkout-arm</workingDirectory>
+                                    <workingDirectory>${project.build.directory}/checkout-legato</workingDirectory>
                                 </configuration>
                             </execution>
                         </executions>
@@ -98,18 +73,18 @@
                         <artifactId>maven-install-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>install-file-libdio-arm</id>
+                                <id>install-file-libdio-legato</id>
                                 <phase>install</phase>
                                 <goals>
                                     <goal>install-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>${project.build.directory}/checkout-arm/build/so/libdio.so</file>
+                                    <file>${project.build.directory}/checkout-legato/build/so/libdio.so</file>
                                     <groupId>net.java.openjdk</groupId>
                                     <artifactId>libdio</artifactId>
                                     <version>${project.version}</version>
                                     <packaging>so</packaging>
-                                    <classifier>arm</classifier>
+                                    <classifier>legato</classifier>
                                     <generatePom>false</generatePom>
                                 </configuration>
                             </execution>
@@ -120,20 +95,20 @@
                         <artifactId>maven-deploy-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>deploy-file-libdio-arm</id>
+                                <id>deploy-file-libdio-legato</id>
                                 <phase>deploy</phase>
                                 <goals>
                                     <goal>deploy-file</goal>
                                 </goals>
                                 <configuration>
-                                    <file>${project.build.directory}/checkout-arm/build/so/libdio.so</file>
+                                    <file>${project.build.directory}/checkout-legato/build/so/libdio.so</file>
                                     <repositoryId>${targetrepositoryId}</repositoryId>
                                     <url>${targetrepositoryUrl}</url>
                                     <groupId>net.java.openjdk</groupId>
                                     <artifactId>libdio</artifactId>
                                     <version>${project.version}</version>
                                     <packaging>so</packaging>
-                                    <classifier>arm</classifier>
+                                    <classifier>legato</classifier>
                                     <generatePom>false</generatePom>
                                 </configuration>
                             </execution>
@@ -143,11 +118,49 @@
             </build>
         </profile>
         <profile>
-            <id>owa</id>
+            <id>unpack-owa-compiler</id>
             <activation>
                 <file>
-                    <exists>/opt/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf</exists>
+                    <missing>${user.home}/owa-compiler</missing>
                 </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>unpack-owasys-compiler</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>unpack</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>es.amplia.oda</groupId>
+                                            <artifactId>owa-compiler</artifactId>
+                                            <version>5.3.1</version>
+                                            <type>zip</type>
+                                            <classifier>x86_64_armhf</classifier>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${user.home}/owa-compiler</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>owasys</id>
+            <activation>
+                <property>
+                    <name>!skipOwasys</name>
+                </property>
             </activation>
             <build>
                 <plugins>
@@ -157,10 +170,10 @@
                         <executions>
                             <execution>
                                 <id>clone-owa</id>
+                                <phase>generate-sources</phase>
                                 <goals>
                                     <goal>checkout</goal>
                                 </goals>
-                                <phase>generate-sources</phase>
                                 <configuration>
                                     <connectionUrl>scm:hg:http://hg.openjdk.java.net/dio/${scm.repository.dio}</connectionUrl>
                                     <scmVersion>${scm.revision.dio}</scmVersion>
@@ -183,7 +196,7 @@
                                 <phase>compile</phase>
                                 <configuration>
                                     <environmentVariables>
-                                        <CROSS_TOOL>/opt/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-</CROSS_TOOL>
+                                        <CROSS_TOOL>${user.home}/owa-compiler/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf/bin/arm-linux-gnueabihf-</CROSS_TOOL>
                                     </environmentVariables>
                                     <executable>make</executable>
                                     <workingDirectory>${project.build.directory}/checkout-owa</workingDirectory>
