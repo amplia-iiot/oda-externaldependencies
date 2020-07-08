@@ -3,13 +3,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>diozero.wrapper</artifactId>
-    <version>0.12-SNAPSHOT</version>
+    <version>0.12</version>
     <packaging>pom</packaging>
 
     <parent>
         <groupId>es.amplia.oda</groupId>
         <artifactId>oda-externaldependencies</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.0</version>
     </parent>
 
     <profiles>
