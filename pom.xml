@@ -4,7 +4,7 @@
 
     <groupId>es.amplia.oda</groupId>
     <artifactId>oda-externaldependencies</artifactId>
-    <version>4.0.0</version>
+    <version>4.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>OpenGate Device Agent External Dependencies</name>
@@ -65,7 +65,7 @@
     <scm>
         <connection>scm:git:http://github.com/amplia-iiot/oda-externaldependencies.git</connection>
         <url>scm:git:http://github.com/amplia-iiot/oda-externaldependencies.git</url>
-        <tag>oda-externaldependencies-4.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <distributionManagement>
