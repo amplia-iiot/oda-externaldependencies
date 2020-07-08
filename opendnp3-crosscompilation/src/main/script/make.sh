@@ -44,7 +44,7 @@ then
 elif [[ ${arch} == "owasys" ]]
 then
     # Source Sierra FX30S toolchain file to cross-compile (Legato should be installed at USER home)
-    toolchainfile=${HOME}/owa-compiler/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf/configowasysenv.cmake
+    toolchainfile=${projectDirectory}/src/main/toolchain/configowasysenv.cmake
 
     if [[ -z $toolchainfile ]]
     then
